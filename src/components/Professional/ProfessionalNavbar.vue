@@ -16,7 +16,7 @@
             <router-link class="nav-link" to="/professionalBooking">My Bookings</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/professionalAppointments">Appointments</router-link>
+            <router-link class="nav-link" to="/professionalAppointment">Appointments</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/professionalService">My Service</router-link>

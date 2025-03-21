@@ -23,7 +23,8 @@ import ProfessionalService from './components/Professional/ProfessionalService.v
 import ProfessionalPackage from './components/Professional/ProfessionalPackage.vue';
 import ProfessionalBooking from './components/Professional/ProfessionalBooking.vue';
 import ProfessionalPayment from './components/Professional/ProfessionalPayment.vue';
-import ProfessionalRating from './components/Professional/ProfessionalRating.vue'
+import ProfessionalRating from './components/Professional/ProfessionalRating.vue';
+import ProfessionalAppointment from './components/Professional/ProfessionalAppointment.vue';
 
 const routes = [
     {
@@ -127,6 +128,11 @@ const routes = [
         path: '/professionalRating',
         name: 'ProfessionalRating',
         component: ProfessionalRating
+    },
+    {
+        path: '/professionalAppointment',
+        name: 'ProfessionalAppointment',
+        component: ProfessionalAppointment
     }
 ];
 
