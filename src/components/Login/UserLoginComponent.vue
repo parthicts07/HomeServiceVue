@@ -44,13 +44,13 @@ export default {
     },
     methods: {
       async login() {
-        const response = await fetch('https://localhost:7001/api/Customer/login', {
+        const response = await fetch('http://127.0.0.1:5000/customers/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            userName: this.username,
+            username: this.username,
             password: this.password
           })
         });
@@ -59,7 +59,7 @@ export default {
   
         if (data.success) {
           localStorage.setItem('custToken', data.token);
-          alert(data.message);
+          alert('Login Successfull');
           this.$router.push('/customerHome'); 
         } else {
           alert('Login failed!');

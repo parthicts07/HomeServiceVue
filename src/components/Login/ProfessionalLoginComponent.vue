@@ -1,4 +1,4 @@
-<template>
+ <template>
     <div class="container">
       <h2>Professional Login</h2>
       <form @submit.prevent="login">
@@ -8,6 +8,7 @@
         <input v-model="password" type="password" class="form-control w-50" placeholder="Enter password">
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
+      <div v-if="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
     </div>
   </template>
   
@@ -16,30 +17,36 @@
     data() {
       return {
         username: '',
-        password: ''
+        password: '',
+        errorMessage: ''
       };
     },
     methods: {
       async login() {
-        const response = await fetch('https://localhost:7001/api/Professional/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            userName: this.username,
-            password: this.password
-          })
-        });
+        try {
+          const response = await fetch('http://127.0.0.1:5000/professionals/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              username: this.username,
+              password: this.password
+            })
+          });
   
-        const data = await response.json();
+          const data = await response.json();
   
-        if (data.success) {
-          localStorage.setItem('profToken', data.token);
-          alert(data.message);
-          this.$router.push('/professionalHome'); 
-        } else {
-          alert('Login failed!');
+          if (response.ok) {
+            localStorage.setItem('profToken', data.token);
+            alert('Login successful!');
+            this.$router.push('/professionalHome'); 
+          } else {
+            this.errorMessage = data.message || 'Login failed!';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          this.errorMessage = 'An error occurred during login. Please try again later.';
         }
       }
     }

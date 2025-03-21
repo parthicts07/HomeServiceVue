@@ -15,6 +15,15 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/customerBooking">Bookings</router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/customerPayments">Payments</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/customerRatings">Ratings</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/customerReport">Report</router-link>
+          </li>
         </ul>
         <button class="btn btn-outline-danger my-2 my-sm-0" @click="logout">Logout</button>
       </div>

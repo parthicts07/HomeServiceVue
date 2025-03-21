@@ -10,13 +10,22 @@
             <router-link class="nav-link" to="/ProfessionalHome">Home</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/ProfessionalProfile">Profile</router-link>
+            <router-link class="nav-link" to="/professionalProfile">Profile</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/ProfessionalBooking">Bookings</router-link>
+            <router-link class="nav-link" to="/professionalBooking">My Bookings</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/ProfessionalAppointments">Appointments</router-link>
+            <router-link class="nav-link" to="/professionalAppointments">Appointments</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/professionalService">My Service</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/professionalPayment">My Payments</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/professionalRating">My Ratings</router-link>
           </li>
         </ul>
         <button class="btn btn-outline-danger my-2 my-sm-0" @click="logout">Logout</button>

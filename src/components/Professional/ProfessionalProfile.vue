@@ -1,6 +1,79 @@
+<!-- <template>
+    <div class="container">
+      <h2>Professional Profile</h2>
+      <div v-if="profile">
+        <p><strong>Username:</strong> {{ profile.username }}</p>
+        <p><strong>Email:</strong> {{ profile.email }}</p>
+        <p><strong>Phone:</strong> {{ profile.phone }}</p>
+        <p><strong>Name:</strong> {{ profile.name }}</p>
+        <p><strong>Bio:</strong> {{ profile.bio }}</p>
+        <p><strong>Experience Years:</strong> {{ profile.experience_years }}</p>
+        <p><strong>Skills:</strong> {{ profile.skills }}</p>
+        <p><strong>Service:</strong> {{ profile.service }}</p>
+        <p><strong>Nationality:</strong> {{ profile.nationality }}</p>
+        <p><strong>Aadhar Card:</strong> {{ profile.aadhar_card }}</p>
+        <div class="profile-picture-container">
+          <img :src="profile.profile_pic_url || '../../assets/uploads/dummy.jpg'" alt="Profile Picture" class="profile-picture">
+        </div>
+      </div>
+      <div v-else>
+        <p>Loading profile...</p>
+      </div>
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    data() {
+      return {
+        profile: null,
+        errorMessage: ''
+      };
+    },
+    async created() {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/professionals/viewProfile', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('profToken')}`
+          }
+        });
+  
+        const data = await response.json();
+  
+        if (data.success) {
+          this.profile = data.profile;
+          console.log(this.profile);
+        } else {
+          this.errorMessage = data.message || 'Failed to load profile.';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        this.errorMessage = 'An error occurred while loading the profile.';
+      }
+    }
+  };
+  </script>
+  
+<style>
+  .profile-picture-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+  }
+
+  .profile-picture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+</style> -->
+
 <template>
   <div class="container mt-4">
-    <h2>Customer Profile</h2>
+    <h2>Professional Profile</h2>
     <div v-if="profile">
       <div class="profile-picture-container" @mouseover="showEditPhoto = true" @mouseleave="showEditPhoto = false">
         <img :src="profile.profile_pic_url || '../../assets/uploads/dummy.jpg'" alt="Profile Picture" class="profile-picture">
@@ -11,11 +84,13 @@
       <div v-if="!isEditing && !isChangingPassword && !isEditingPhoto">
         <p><strong>Name:</strong> {{ profile.name }}</p>
         <p><strong>Email:</strong> {{ profile.email }}</p>
-        <p><strong>Address:</strong> {{ profile.address }}</p>
-        <p><strong>City:</strong> {{ profile.city }}</p>
-        <p><strong>State:</strong> {{ profile.state }}</p>
-        <p><strong>Zip Code:</strong> {{ profile.zipcode }}</p>
-        <p><strong>Mobile Number:</strong> {{ profile.phone }}</p>
+        <p><strong>Phone:</strong> {{ profile.phone }}</p>
+        <p><strong>Bio:</strong> {{ profile.bio }}</p>
+        <p><strong>Experience Years:</strong> {{ profile.experience_years }}</p>
+        <p><strong>Skills:</strong> {{ profile.skills }}</p>
+        <p><strong>Service:</strong> {{ profile.service }}</p>
+        <p><strong>Nationality:</strong> {{ profile.nationality }}</p>
+        <p><strong>Aadhar Card:</strong> {{ profile.aadhar_card }}</p>
         <button class="btn btn-primary" @click="isEditing = true">Edit Profile</button>
         <button class="btn btn-secondary" @click="isChangingPassword = true">Change Password</button>
       </div>
@@ -23,11 +98,13 @@
         <h3>Edit Profile</h3>
         <input type="text" v-model="editProfileData.name" class="form-control" placeholder="Name">
         <input type="email" v-model="editProfileData.email" class="form-control mt-2" title="You can't change Email" readonly>
-        <input type="text" v-model="editProfileData.phone" class="form-control mt-2" placeholder="Mobile Number">
-        <input type="text" v-model="editProfileData.address" class="form-control mt-2" placeholder="Address">
-        <input type="text" v-model="editProfileData.city" class="form-control mt-2" placeholder="City">
-        <input type="text" v-model="editProfileData.state" class="form-control mt-2" placeholder="State">
-        <input type="text" v-model="editProfileData.zipcode" class="form-control mt-2" placeholder="Zip Code">
+        <input type="text" v-model="editProfileData.phone" class="form-control mt-2" placeholder="Phone">
+        <input type="text" v-model="editProfileData.bio" class="form-control mt-2" placeholder="Bio">
+        <input type="text" v-model="editProfileData.experience_years" class="form-control mt-2" placeholder="Experience Years">
+        <input type="text" v-model="editProfileData.skills" class="form-control mt-2" placeholder="Skills">
+        <input type="text" v-model="editProfileData.service" class="form-control mt-2" placeholder="Service">
+        <input type="text" v-model="editProfileData.nationality" class="form-control mt-2" placeholder="Nationality">
+        <input type="text" v-model="editProfileData.aadhar_card" class="form-control mt-2" placeholder="Aadhar Card">
         <button class="btn btn-primary mt-2" @click="editProfile">Save Changes</button>
         <button class="btn btn-secondary mt-2" @click="isEditing = false">Cancel</button>
       </div>
@@ -65,10 +142,12 @@ export default {
         name: '',
         email: '',
         phone: '',
-        address: '',
-        city: '',
-        state: '',
-        zipcode: ''
+        bio: '',
+        experience_years: '',
+        skills: '',
+        service: '',
+        nationality: '',
+        aadhar_card: ''
       },
       changePasswordData: {
         oldPassword: '',
@@ -84,8 +163,8 @@ export default {
   methods: {
     async fetchProfile() {
       try {
-        const token = localStorage.getItem('custToken');
-        const response = await fetch('http://localhost:5000/customers/viewProfile', {
+        const token = localStorage.getItem('profToken');
+        const response = await fetch('http://localhost:5000/professionals/viewProfile', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -93,7 +172,6 @@ export default {
         const data = await response.json();
         if (data.success) {
           this.profile = data.profile;
-          console.log(this.profile.profile_pic_url);
           this.editProfileData = { ...data.profile };
         } else {
           alert('Failed to load profile');
@@ -105,8 +183,8 @@ export default {
     },
     async editProfile() {
       try {
-        const token = localStorage.getItem('custToken');
-        const response = await fetch('http://localhost:5000/customers/editProfile', {
+        const token = localStorage.getItem('profToken');
+        const response = await fetch('http://localhost:5000/professionals/editProfile', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -133,8 +211,8 @@ export default {
         return;
       }
       try {
-        const token = localStorage.getItem('custToken');
-        const response = await fetch('http://localhost:5000/customers/changePassword', {
+        const token = localStorage.getItem('profToken');
+        const response = await fetch('http://localhost:5000/professionals/changePassword', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -163,10 +241,10 @@ export default {
         return;
       }
       try {
-        const token = localStorage.getItem('custToken');
+        const token = localStorage.getItem('profToken');
         const formData = new FormData();
         formData.append('file', this.profilePicture);
-        const response = await fetch('http://localhost:5000/customers/profile/update_picture', {
+        const response = await fetch('http://localhost:5000/professionals/profile/update_picture', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -215,86 +293,9 @@ export default {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.3s;
 }
 
-.profile-picture-container:hover .edit-photo-overlay {
-  opacity: 1;
-}
-
-.overlay-form {
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1050;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  outline: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-.modal-dialog {
-  position: relative;
-  width: auto;
-  margin: 10px;
-  pointer-events: none;
-  max-width: 500px;
-  margin: 1.75rem auto;
-}
-.modal-content {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  pointer-events: auto;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 0.3rem;
-  outline: 0;
-}
-.modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-  border-top-left-radius: 0.3rem;
-  border-top-right-radius: 0.3rem;
-}
-.modal-title {
-  margin-bottom: 0;
-  line-height: 1.5;
-}
-.close {
-  padding: 0;
-  background-color: transparent;
-  border: 0;
-  /* -webkit-appearance: none; */
-}
-.modal-body {
-  position: relative;
-  flex: 1 1 auto;
-  padding: 1rem;
-}
-.modal-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 1rem;
-  border-top: 1px solid #dee2e6;
+.edit-icon {
+  cursor: pointer;
 }
 </style>
