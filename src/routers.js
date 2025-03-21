@@ -26,6 +26,14 @@ import ProfessionalPayment from './components/Professional/ProfessionalPayment.v
 import ProfessionalRating from './components/Professional/ProfessionalRating.vue';
 import ProfessionalAppointment from './components/Professional/ProfessionalAppointment.vue';
 
+import AdminDashboard from './components/Admin/AdminDashboard.vue';
+import AdminUsers from './components/Admin/AdminUsers.vue';
+import AdminServices from './components/Admin/AdminServices.vue';
+import AdminPackages from './components/Admin/AdminPackages.vue';
+import AdminBookings from './components/Admin/AdminBookings.vue';
+import AdminRequests from './components/Admin/AdminRequests.vue';
+import AdminReports from './components/Admin/AdminReports.vue';
+
 const routes = [
     {
         path: '/',
@@ -133,6 +141,41 @@ const routes = [
         path: '/professionalAppointment',
         name: 'ProfessionalAppointment',
         component: ProfessionalAppointment
+    },
+    {
+        path: '/adminHome',
+        name: 'AdminDashboard',
+        component: AdminDashboard
+    },
+    {
+        path: '/adminUsers',
+        name: 'AdminUsers',
+        component: AdminUsers
+    },
+    {
+        path: '/adminServices',
+        name: 'AdminServices',
+        component: AdminServices
+    },
+    {
+        path: '/adminPackages',
+        name: 'AdminPackages',
+        component: AdminPackages
+    },
+    {
+        path: '/adminBookings',
+        name: 'AdminBookings',
+        component: AdminBookings
+    },
+    {
+        path: '/adminRequests',
+        name: 'AdminRequests',
+        component: AdminRequests
+    },
+    {
+        path: '/adminReports',
+        name: 'AdminReports',
+        component: AdminReports
     }
 ];
 

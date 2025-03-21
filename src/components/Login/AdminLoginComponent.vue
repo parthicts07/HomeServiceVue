@@ -1,21 +1,58 @@
 <template>
-  <div class="container">
-    <h2>Admin Login</h2>
-        <form>
-            <label class="form-label">Username</label>
-            <input type="text" class="form-control w-50" placeholder="Enter username">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-control w-50" placeholder="Enter password">
-        </form>
+    <div class="container">
+      <h2>Admin Login</h2>
+      <form @submit.prevent="login">
+        <label class="form-label">Username</label>
+        <input v-model="username" type="text" class="form-control w-50" placeholder="Enter username">
+        <label class="form-label">Password</label>
+        <input v-model="password" type="password" class="form-control w-50" placeholder="Enter password">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+      <div v-if="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
     </div>
-</template>
-
-<script>
-export default {
-
-}
-</script>
-
-<style>
-
-</style>
+  </template>
+  
+  <script>
+  export default {
+    data() {
+      return {
+        username: '',
+        password: '',
+        errorMessage: ''
+      };
+    },
+    methods: {
+      async login() {
+        try {
+          const response = await fetch('http://127.0.0.1:5000/admin/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              username: this.username,
+              password: this.password
+            })
+          });
+  
+          const data = await response.json();
+  
+          if (response.ok) {
+            localStorage.setItem('adminToken', data.token);
+            alert('Login successful!');
+            this.$router.push('/adminHome'); 
+          } else {
+            this.errorMessage = data.message || 'Login failed!';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          this.errorMessage = 'An error occurred during login. Please try again later.';
+        }
+      }
+    }
+  };
+  </script>
+  
+  <style>
+  /* Add your styles here */
+  </style>

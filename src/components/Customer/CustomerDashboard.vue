@@ -11,15 +11,6 @@
         <div class="row">
           <div class="col-md-6" v-for="service in services" :key="service.service_id">
             <div class="card mb-4 service-card">
-              <!-- <div class="card-body">
-                <div class="service-image" :style="{ backgroundImage: `url(${service.service_picture_url || 'default-service.jpg'})` }"></div>
-                <h5 class="card-title">{{ service.service_name }}</h5>
-                <p class="card-text">{{ service.description }}</p>
-                <div class="professional-info">
-                  <img :src="service.professional_picture_url || 'default-profile.jpg'" alt="Professional Picture" class="professional-pic" />
-                  <p class="professional-name">{{ service.professional_name }}</p>
-                </div>
-              </div> -->
               <router-link :to="{ name: 'CustomerPackage', params: { serviceId: service.service_id } }" class="card-link">
                 <div class="card mb-4 service-card">
                   <div class="card-body">

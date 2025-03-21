@@ -1,18 +1,17 @@
 <template>
-    <div id="AdminDashboard">
+    <!-- <div id="AdminDashboard">
         <AdminNavbar/>
         <router-view/>
+    </div> -->
+    <div>
+        <p>This Admin Home</p>
     </div>
 </template>
 
 <script>
-import AdminNavbar from './AdminNavbar';
 
 export default {
-    name: 'AdminrDashboard',
-    components: {
-        AdminNavbar,
-    }
+
 };
 </script>
 
