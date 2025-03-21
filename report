@@ -1,0 +1,136 @@
+class Report(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    report_type = db.Column(db.Enum('professional', 'service', 'package'), nullable=False)
+    reporting_id = db.Column(db.Integer, nullable=False)
+    reason = db.Column(db.Text, nullable=False)
+    status = db.Column(db.Enum('pending', 'resolved'), default='pending')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    resolved_at = db.Column(db.DateTime, nullable=True)
+    action_taken = db.Column(db.String(255), nullable=True)
+    
+    customer = db.relationship('User', backref='reports', foreign_keys=[customer_id])
+
+
+@customer_ns.route("/report")
+class ReportIssue(Resource):
+    @token_required(role="customer")
+    @customer_ns.expect(report_model, validate=True)
+    def post(self):
+        """Customers report issues related to professionals, services, or packages"""
+        data = request.get_json()
+        customer_id = request.user["cust_id"]
+        report_type = data.get("report_type")  # 'professional', 'service', 'package'
+        reporting_id = data.get("reporting_id")  # ID of the entity being reported
+        reason = data.get("reason")
+
+        if not report_type or report_type not in ["professional", "service", "package"] or not reporting_id or not reason:
+            return {"message": "Invalid input"}, 400
+
+        # **Validation to check if the reported ID exists**
+        if report_type == "professional":
+            exists = Professional.query.filter_by(prof_id=reporting_id).first()
+        elif report_type == "service":
+            exists = Service.query.filter_by(service_id=reporting_id).first()
+        elif report_type == "package":
+            exists = Package.query.filter_by(package_id=reporting_id).first()
+        else:
+            return {"message": "Invalid report type"}, 400
+
+        if not exists:
+            return {"message": f"Invalid {report_type} ID: {reporting_id}"}, 404
+
+        # If valid, create report
+        new_report = Report(
+            customer_id=customer_id,
+            report_type=report_type,
+            reporting_id=reporting_id,
+            reason=reason,
+            status="pending"
+        )
+
+        try:
+            db.session.add(new_report)
+            db.session.commit()
+            return {"message": "Report submitted successfully"}, 201
+        except Exception as e:
+            db.session.rollback()
+            return {"message": "Error submitting report", "error": str(e)}, 500
+
+
+@admin_ns.route("/reports")
+class ViewReports(Resource):
+    @token_required
+    def get(self):
+        """Admin views all pending reports"""
+        reports = Report.query.filter_by(status="pending").all()
+        reports_data = [{
+            "id": r.id,
+            "customer_id": r.customer_id,
+            "report_type": r.report_type,
+            "reporting_id": r.reporting_id,
+            "reason": r.reason,
+            "status": r.status,
+            "created_at": r.created_at.strftime('%Y-%m-%d %H:%M:%S') if r.created_at else None 
+        } for r in reports]
+
+        return {"reports": reports_data}, 200
+
+
+@admin_ns.route("/reports/<int:report_id>/resolve")
+class ResolveReport(Resource):
+    @token_required
+    @admin_ns.expect(resolve_report_model, validate=True)
+    def put(self, report_id):
+        """Admin reviews and resolves a report"""
+        report = Report.query.get(report_id)
+        if not report or report.status == "resolved":
+            return {"message": "Report not found or already resolved"}, 404
+
+        data = request.get_json()
+        action = data.get("action", "ignore")  # Default action is 'ignore'
+
+        # Update report status
+        report.status = "resolved"
+        report.resolved_at = datetime.utcnow()
+
+        if action == "flag":
+            report.action_taken = "Flagged"
+            # Flag the corresponding entity
+            if report.report_type == "professional":
+                professional = Professional.query.get(report.reporting_id)
+                if professional:
+                    professional.is_flagged = True
+            elif report.report_type == "service":
+                service = Service.query.get(report.reporting_id)
+                if service:
+                    service.is_flagged = True
+            elif report.report_type == "package":
+                package = Package.query.get(report.reporting_id)
+                if package:
+                    package.is_flagged = True
+        else:
+            report.action_taken = "Warned"  # Default action for 'ignore'
+
+        try:
+            db.session.commit()
+            return {
+                "message": "Report resolved successfully",
+                "report_id": report.id,
+                "action_taken": report.action_taken,
+                "resolved_at": report.resolved_at.strftime('%Y-%m-%d %H:%M:%S')
+            }, 200
+        except Exception as e:
+            db.session.rollback()
+            return {"message": "Error resolving report", "error": str(e)}, 500
+
+
+report_model = customer_ns.model("Report", {
+    "report_type": fields.String(required=True, description="Type of report (professional, service, package)"),
+    "reporting_id": fields.Integer(required=True, description="ID of the reported entity"),
+    "reason": fields.String(required=True, description="Reason for reporting")
+})
+
+resolve_report_model = admin_ns.model("ResolveReport", {
+    "action_taken": fields.String(required=True, description="Action taken by admin (e.g., Flagged, Warned)")
+})
